@@ -1,0 +1,49 @@
+DCR POS 矿池部署注意细节
+  1、部署 DCR POS矿池，需要将源代码克隆放到go 语言的安装目录下的 src 文件夹,
+  这样才能运行 go 语言的依赖库命令 dep
+
+Go 语言 命令 dep 配置
+  1、安装命令
+  go get -u github.com/golang/dep/cmd/dep
+
+  2、将命令配置到 usr/sbin
+  添加快捷启动   ln -s /Users/KoogleZhang/go/bin/dep /usr/sbin
+
+  3、添加到当前用户终端
+  编辑 .profile
+  export PATH="$PATH:$HOME/go/bin"
+
+Go 语言 package 命令
+
+dcrd 组件
+
+  介绍说明：https://docs.decred.org/getting-started/user-guides/dcrd-setup/
+  git clone https://github.com/decred/dcrd
+  dep ensure
+  go install . ./cmd/...
+
+  必要配置定义 ~/Library/Application\ Support/Dcrd/dcrd.conf
+
+  ; rpcuser=username
+  ; rpcpass=password
+
+  启动组件
+
+  ./Users/KoogleZhang/go/bin/dcrd
+
+dcrwallet 组件
+
+  git clone https://github.com/decred/dcrwallet
+  dep ensure
+  go install . ./cmd/...
+
+  必要配置定义 ~/Library/Application\ Support/Dcrwallet/dcrwallet.conf
+
+  #初始化钱包
+  dcrwallet --create
+  #启动钱包并同步信息
+  dcrwallet
+
+  #配置 RPC 秘钥
+
+

@@ -1,0 +1,29 @@
+https://martinfowler.com/articles/rake.html
+
+任务类型 ： 常规任务[Regular tasks] ，文件任务[File tasks]
+
+常规任务
+task :build_refact => [:clean] do
+  # code
+end
+
+文件任务
+file 'build/dev/rake.html' => 'dev/rake.xml' do |t|
+  #code
+end
+
+添加 先决条件 依赖关系 执行顺序
+
+task :first do
+  #first's body
+end
+
+task :second => :first do
+  #second's body
+end
+
+task start: [:first, :second]
+合成任务 [Synthesizing Tasks]
+
+
+

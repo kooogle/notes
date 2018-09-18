@@ -1,0 +1,186 @@
+——————————————————————————————————————————
+Redis 缓存服务
+
+To have launchd start redis now and restart at login:
+  brew services start redis
+
+Or, if you don't want/need a background service you can just run:
+  redis-server /usr/local/etc/redis.conf
+
+解决 Warning
+
+'vm.overcommit_memory = 1' to /etc/sysctl.conf
+
+command 'sysctl vm.overcommit_memory=1'
+
+echo 511 > /proc/sys/net/core/somaxconn
+
+——————————————————————————————————————————
+RabbitMQ 消息接收和转发
+
+[https://www.rabbitmq.com/]
+
+Bash completion has been installed to:
+  /usr/local/etc/bash_completion.d
+
+To have launchd start rabbitmq now and restart at login:
+  brew services start rabbitmq
+Or, if you don't want/need a background service you can just run:
+  rabbitmq-server
+
+rutorial to ruby
+[https://www.rabbitmq.com/tutorials/tutorial-one-ruby.html]
+
+gem install bunny
+[http://rubybunny.info/]
+
+浏览器查看管理
+rabbitmq-plugins enable rabbitmq_management
+[http://server-name:15672/]
+添加用户
+rabbitmqctl add_user username password
+用户管理权限受理
+rabbitmqctl set_user_tags username administrator
+
+1、查看队列信息
+
+
+2、查看交易所
+  sudo rabbitmqctl list_exchanges
+
+
+exchange 类型
+  direct 根据指定的路由（routing_key）来进行消息推送
+  fanout 广播消息
+  topic  可以给多个路由发送消息，且路由格式为 '*.black.w#' (匹配多个)
+
+——————————————————————————————————————————
+Pusher 消息推送
+[https://github.com/pusher/pusher-http-ruby]
+
+
+——————————————————————————————————————————
+Post 数据备份
+1、备份数据库
+  青云服务器：pg_dump -U doyoudo -h localhost -p 5432 doyoudo > ~/20160617.dump
+
+2、恢复数据库
+  psql -U postgres -h localhost -p 5432 doyoudotest < /path/infile
+
+3、导入 sql 文件数据
+  psql  -U postgres -W -d  justing_data -f anye.sql
+
+4、服务器配置
+production:
+  adapter: postgresql
+  host: localhost
+  encoding: utf8
+  database: doyoudo
+  username: doyoudo
+  password: zCXGk723vCX
+
+——————————————————————————————————————————
+文件远程传输【SCP】
+
+远程数据拷贝
+    scp -P 32220 root@119.254.210.34:/root/text /Users/mac/Documents
+本地拷贝到远程
+   scp -P 32220 ~/vidoe/av.rmvb root@119.254.210.34:/var/www/av/
+拷贝文件夹
+   scp -r fox@123.56.252.5:/var/www/Tsinova-Web/shared/public
+   scp fox@123.56.252.5:/home/fox/assets.tar.gz ~/
+
+——————————————————————————————————————————
+应用常用命令
+  迁移数据表
+  bundle exec rake db:migrate RAILS_ENV=production
+
+  终端调试数据
+  bundle exec rails c p
+
+  样式文件编译
+  bundle exec rake assets:precompile RAILS_ENV=production
+
+——————————————————————————————————————————
+端口占用处理
+  ps aux | grep ruby  #找出占用进程的名称
+
+  kill -9 666   #干掉进程
+
+——————————————————————————————————————————
+【Mac操作技巧】
+1、软件 Excel 使用技巧
+    Excel 多窗口切换   command + ~
+    Excel 单元格选中删除  fn + command + delete
+2、给程序设置快捷链接
+    sudo ln -s  /path/file  /usr/bin/name
+
+——————————————————————————————————————————
+文件打包
+
+[root@linux ~]# tar -cvf /tmp/etc.tar /etc <==仅打包，不压缩！
+[root@linux ~]# tar -zcvf /tmp/etc.tar.gz /etc <==打包后，以 gzip 压缩
+[root@linux ~]# tar -jcvf /tmp/etc.tar.bz2 /etc <==打包后，以 bzip2 压缩
+
+——————————————————————————————————————————
+MySQL数据库操作
+
+备份数据库
+mysqldump -hhostname -uusername -ppassword databasename > backupfile.sql
+
+mysql -hlocalhost -uroot -p bittrex < 2018_08_30backupfile.sql
+
+  例子：
+mysqldump -h100.99.90.238 -utsi -ptsi2014 qingke_shop > ~/SQLdump/tsinova_production_20170301.sql
+
+mysqldump -hlocalhost -uroot -p chain > ~/chain.sql
+
+还原数据库
+mysql -hhostname -uusername -ppassword databasename < backupfile.sql
+
+  例子：
+
+mysql -hlocalhost -uroot -p chain <
+
+
+解决方法：
+对于 mysqldump 要如何避免出现(Warning: Using a password on the command line interface can be insecure.) 警告信息呢?
+
+mysqldump -hlocalhost -uname -p databases > file.sql
+
+——————————————————————————————————————————
+Safari 浏览器无法上网
+
+sudo killall -9 networkd
+
+
+——————————————————————————————————————————
+
+OrderAsk.where(currency: 6).where("price < 0.4").last(100).map {|x| x.update(state:100)}
+OrderBid.where(currency: 6).where("price < 0.4").last(1000).map {|x| x.update(state:100)}
+
+Order.with_state(:wait).map {|x| x.update(state:100)}
+Order.where(currency: 6).with_state(:wait).map {|x| x.update(state:200)}
+
+rm -f log/* && rake daemons:start
+
+ps -ef | grep -E 'peatio|\.rb' | awk '{print $2}' | xargs kill -9
+
+rake daemon:matching:start
+
+rake daemon:trade_executor:start
+
+
+price = dcr.tickers.where("created_at > ?",Time.now.ago(1.week)).map(&:last_price)
+
+m = price.max
+
+n = price.min
+
+k = dcr.market_price
+
+a = (m - k) / k
+
+b = (k - n) / k
+
+f =(a - b) / a * b

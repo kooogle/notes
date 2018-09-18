@@ -1,0 +1,1009 @@
+获取root权限  sudo su
+
+Main IP Address: 192.157.192.67
+SSH User: root
+SSH Password: sedzxmDfl8Eq2Ivg
+
+Main IP Address: 192.157.192.67
+SSH User: root
+SSH Port: 27199
+SSH Password: WHUiMoLlXwU0
+——————————————————————————————————————
+
+a、SSH免密码登录
+  1.在A机下生成公钥/私钥对。
+  ssh-keygen -t rsa -P ''
+  它在/home/hadoop下生成.ssh目录，.ssh下有id_rsa和id_rsa.pub
+  2.把A机器下的id_rsa.pub复制到B机器下的.ssh/authorized_keys文件里。
+  3.B机把从A机复制的id_rsa.pub添加到.ssh/authorized_keys文件里。
+  authorized_keys的权限要是600。
+  chmod 600 .ssh/authorized_keys
+
+  4.通过命令行添加本地私钥到远端服务器
+  ssh-copy-id user@host
+
+  $ ssh-add ~/.ssh/id_rsa.pub
+  Could not open a connection to your authentication agent.
+
+  eval `ssh-agent -s`
+  ssh-add
+
+——————————————————————————————————————
+
+b、数据库安装
+  安装 Postgresql
+  1、apt-cache search postgresql* 查看与之相关的组件
+  2、sudo apt-get install -y postgresql-9.3
+  3、sudo apt-get install -y postgresql-server-dev-all  安装服务器连接开发组件
+  4、启动服务 /etc/init.d/postgresql restart
+  5、登陆服务器 sudo -u postgres psql
+  6、更改默认密码 ALTER USER postgres WITH PASSWORD 'postgres';
+  7、账户登录 psql -U postgres -h localhost
+  8、扩展 http://blog.chinaunix.net/uid-25885064-id-3404550.html
+  9、config /etc/postgresql/9.3/main data   /var/lib/postgresql/9.3/main
+
+  安装 Mysql
+  1、apt-get install -y mysql-server
+  2、设置密码： root
+  3、apt-get install libmysqlclient-dev
+  4、启动数据库 service mysql start
+  5、解决数据无法存储 emoji 等表情的问题，设置字符集
+
+  http://stackoverflow.com/questions/22464011/mysql2error-incorrect-string-value
+
+  ALTER DATABASE videos CHARACTER SET utf8mb4 COLLATE utf8_unicode_ci;
+——————————————————————————————————————
+
+d、RVM 安装使用
+  apt-get install -y curl
+  1、安装  curl -sSL https://get.rvm.io | bash
+  2、启动 source /etc/profile | source /etc/profile.d/rvm.sh
+      普通用户：source /home/deploy/.rvm/scripts/rvm
+      root用户：source /etc/profile.d/rvm.sh
+      /usr/local/rvm/
+  3、卸载   rvm implode
+
+  4、从本地安装 ruby 版本
+    a、将ruby 安装包 bar2 下载到 ~/.rvm/achives
+    b、将文件名字更改为 bin-ruby.xxxx 格式
+    c、安装 rvm install x.x.x
+    d、非 root 用户本地安装[需要 sudo 完整命令]
+      sudo /home/www/.rvm/bin/rvm --verify-downloads 2 --disable-binary install x.x.x
+    e、版本镜像 https://ruby.taobao.org/mirrors/ruby/
+  5、安装系统相关依赖
+
+  apt-get install -y build-essential
+
+  6、therubyracer 安装流程
+    I、安装系统依赖 apt-get install build-essential
+    II、安装gem install libv8
+——————————————————————————————————————
+
+e、Passenger + Nginx 服务组合
+  配置passenger   gem install passenger
+  安装ssl服务     apt-get install -y libcurl4-openssl-dev
+  安装 PCRE   apt-get install -y libpcre++-dev libpcre++0
+  安装 nginx    passenger-install-nginx-module
+  安装目录    /opt/nginx
+  添加快捷启动      ln -s /opt/nginx/sbin/nginx /usr/sbin
+
+  apt-get 安装 Nginx
+  apt-get install -y nginx
+
+  安装包
+  解压
+  1、tar -zxvf nginx
+  配置并制定安装目录
+  2、cd nginx && ./configure --prefix=/usr/local/nginx
+  安装需要的支持库
+  3、apt-get install -y libcurl4-openssl-dev libpcre++-dev libpcre++0v5 libssl-dev
+  支持 SSL
+  apt-get install -y libssl-dev
+  编译及安装
+  4、sudo make && sudo make install
+  添加快捷启动方式
+  5、ln -s /usr/local/nginx/sbin/nginx /usr/sbin
+  配置添加SSL服务
+  ./configure --with-http_ssl_module
+  添加静态资源打包
+  ./configure --with-http_gzip_static_module --with-http_gunzip_module
+
+  下载稳定版本
+  wget http://nginx.org/download/nginx-1.12.2.tar.gz
+——————————————————————————————————————
+
+f、安装git 服务
+  安装 git
+  apt-get install -y git
+
+h、远程登录欢迎信息修改
+  Ubuntu的登陆和欢迎信息控制/etc/issue和/etc/motd。/etc/issue与/etc/motd区别在于：
+  当一个网络用户或通过串口登录系统 上时,/etc/issue的文件内容显示在login提示符之前,
+  而/etc/motd内容显示在用户成功登录系统之后。
+
+i、ssh终端登陆提示错误，安装中文插件
+  perl: warning: Setting locale failed.
+  解决方法：apt-get install -y language-pack-zh-hans
+
+export LANG=zh_CN.UTF-8
+export LANGUAGE=zh_CN.UTF-8
+
+  PS1='╭─${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u\[\033[0;31m\]@DAX-TEST\[\033[00m\]:\[\033[1;33m\]\w\[\033[00m\]\n╰─\$ '
+  添加 emoji 支持
+
+  sudo apt-get install ttf-ancient-fonts
+
+j、文件远程拷贝scp
+  本机至远程
+    scp -P 2222 ~/vidoe/av.rmvb www@119.254.100.96:/var/www/av/
+  远程到本地
+    scp -P 2222 www@119.254.100.96:/var/www/text.txt ~/txt/
+
+k、进程匹配查看
+  ps -ef | grep text  #text为要匹配的名称
+  ps aux | grep ruby  #找出占用进程的名称
+
+l、端口占用
+
+  1.查看端口  lsof -i tcp:port 将port换成被占用的端口口(如：8086、9998)
+  2.kill进程    找到进程的PID,使用kill命令：kill PID（进程的PID，如2044)
+  3.强制删除被占用的进程  kill -9 pid
+
+m、关闭匹配的进程
+  [http://www.commandlinefu.com/commands/view/1138/ps-ef-grep-process-grep-v-grep-awk-print-2-xargs-kill-9]
+  ps -ef | grep target | awk '{print $1}' | xargs kill -9
+
+  实例
+   ps -ef | grep -E 'peatio|\.rb' | awk '{print $2}' | xargs kill -9
+
+n、SCREEN 终端多后台任务
+
+  创建：screen -S ###
+
+  离开当前会话： Ctr + A + D
+
+  查看有多少会话：screen -ls
+
+  恢复：screen -r ###
+
+  如果不能恢复：先screen -d ###
+
+  再 screen -r ###
+
+  删除 screen -S ### -X quit
+
+——————————————————————————————————————
+
+m、nginx 常用配置
+  nginx.conf
+http {
+    default_type  application/octet-stream;
+    sendfile on;
+    send_timeout 300s;
+    fastcgi_buffers 8 64k;
+    fastcgi_busy_buffers_size 128k;
+    client_body_buffer_size 32K;
+    client_max_body_size 4G;
+    tcp_nopush on;
+    tcp_nodelay on;
+    keepalive_timeout 65;
+    types_hash_max_size 2048;
+    server_names_hash_bucket_size 64;
+    gzip on;
+    gzip_disable "msie6";
+    include  passenger.conf;
+    include  mime.types;
+    include  server.conf;
+}
+
+server.conf
+  server {
+    listen 80;
+    server_name koogle.cc;
+
+    root   /var/www/web/videos/current/public;
+
+    location / {
+      index  index.html index.htm;
+      passenger_enabled on;
+      proxy_set_header    Host             $host;
+      proxy_set_header    X-Real-IP        $remote_addr;
+      proxy_set_header    X-Forwarded-For  $proxy_add_x_forwarded_for;
+    }
+
+    error_log  /opt/nginx/logs/log_error.log;
+
+    location ~ ^/(assets|uploads)/ {
+      gzip_static on;
+      expires max;
+      add_header Cache-Control public;
+      add_header ETag "";
+      break;
+    }
+  }
+
+doyoudo
+  server {
+    listen 80;
+
+    server_name v.doyoudo.com;
+
+    root /var/www/web/doyoudo/current/public;
+
+    access_log /var/www/logs/doyoudo-access.log;
+    error_log  /var/www/logs/doyoudo-error.log;
+
+    location / {
+      index  index.html index.htm;
+      proxy_set_header    Host             $host;
+      proxy_set_header    X-Real-IP        $remote_addr;
+      proxy_set_header    X-Forwarded-For  $proxy_add_x_forwarded_for;
+    }
+
+    location ~ ^/(assets|uploads)/ {
+      gzip_static on;
+      expires max;
+      add_header Cache-Control public;
+      add_header ETag "";
+      break;
+    }
+  }
+  80端扣代理到其他的端口
+  server {
+    listen 80;
+    server_name tp.koogle.cc;
+
+    location / {
+        proxy_pass http://192.157.192.66:9091;
+        proxy_set_header Host $host:80;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header Via "nginx";
+
+    }
+  }
+
+HTTPS  HTTP 双模式运行多重定向 解决
+
+proxy_set_header X-Forwarded-Proto $scheme;
+
+——————————————————————————————————————
+
+n、用户管理
+  添加用户 useradd www
+  修改密码 passwd www
+  切换用户 su www
+  赋予root权限
+    方法一：修改 /etc/sudoers
+    %wheel        ALL=(ALL)      ALL
+    www-data      ALL=(ALL)      NOPASSWD: ALL
+
+  增加ssh权限 修改/etc/ssh/sshd_config
+  AllowUsers:www
+
+  用户免密码登陆
+    将本机pub key添加至 /home/user/.ssh/authorized.keys
+    授权 chmod 600 /home/user/.ssh/authorized.keys
+
+  用户密码登陆
+    修改 /etc/ssh/sshd_config
+    PubkeyAuthentication yes  改为 no
+    PasswordAuthentication no 改为 yes
+    service ssh restart
+
+  开启 www-data 用户
+    修改 /etc/passwd 将 www-data用户改为 /bin/bash，即可终端启用
+
+  创建新用户并添加其用户目录
+    adduser www
+
+——————————————————————————————————————
+i
+o、Zsh终端配置
+  安装
+    sudo apt-get install -y zsh
+    sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
+  切换至zsh：chsh -s /bin/zsh
+  更新： upgrade_oh_my_zsh
+——————————————————————————————————————
+p、VPN基础配置
+  安装        apt-get install -y pptpd
+  配置本地 IP,  以及范围    vim /etc/pptpd.conf
+    localip 192.168.117.1
+    remoteip 192.168.117.110-120
+  配置账户密码    vim /etc/ppp/chap-secrets
+  随机生成密码    [*'a'..'z',*'0'..'9',*'A'..'Z'].sample(8).join
+  配置服务器DNS  vim /etc/ppp/pptpd-options
+    ms-dns 8.8.8.8
+    ms-dns 8.8.4.4
+  启动服务      service pptpd restart   service pppd-dns restart
+  查看服务运行状态  netstat -alpn | grep pptp
+  设置网络转发    vim /etc/sysctl.conf
+    net.ipv4.ip_forward = 1
+  激活网络转发    sysctl -p
+  报错”error: permission denied on key ‘net.nf_conntrack_max'”
+  等需执行以下命令后再次执行”sysctl -p”：
+  rm -f /sbin/sysctl
+  ln -s /bin/true /sbin/sysctl
+  使用iptables创建NAT规则
+    iptables -t nat -A POSTROUTING -o venet0 -s 192.168.77.0/24 -j MASQUERADE && iptables-save
+    iptables -t nat -A POSTROUTING -o venet0 -j MASQUERADE && iptables-save
+
+  开启iptables转发（其中eth0是联网网卡，192.168.117.0/24是准备使用的网段与第2步骤设相同）
+    iptables -I INPUT -s 192.168.77.0/24 -i ppp+ -j ACCEPT
+
+
+  如果你把ufw开启了，那么需要如下设置来允许pptp转发数据包
+    vim /etc/default/ufw
+    "DEFAULT_FORWARD_POLICY" 从 "DROP" 改为 "ACCEPT"
+
+
+  拓展方法，是PPTP客户端都可以互相通信
+    iptables -A INPUT -i eth0 -p tcp --dport 1723 -j ACCEPT && iptables-save
+    iptables -A INPUT -i eth0 -p gre -j ACCEPT && iptables-save
+    iptables -A FORWARD -i ppp+ -o eth0 -j ACCEPT && iptables-save
+    iptables -A FORWARD -i eth0 -o ppp+ -j ACCEPT && iptables-save
+
+  VPN连上后，不能连接外网，需要添加一条路由
+    route add -net 192.168.108.0 netmask 255.255.240.0 dev eth0
+    route add -net 192.168.108.0/24 gw 172.31.31.94
+  设置转发
+   iptables -t nat -A POSTROUTING -s 192.168.117.0/255.255.255.0 -j SNAT --to-source 52.79.180.129
+
+  修改日志输出位置
+    /etc/ppp/options里加入如下一行启用单独的日志。
+    logfile /var/log/ppp.log
+
+  linux pptp服务器查看VPN在线用户
+    ifconfig | grep ppp
+
+  想看看都是哪些VPN用户在线，使用这个命令：
+    last | grep still | grep ppp
+
+——————————————————————————————————————
+s、 VPN 用户登录日志
+用户登陆断开日志
+vim /etc/ppp/ip-up
+echo "##################################" >> /var/log/pptpd.log
+echo "#Now User $PEERNAME is connected!!!" >>      /var/log/pptpd.log
+echo "##################################" >>  /var/log/pptpd.log
+echo "#登陆时间: `date -d today +%F_%T`" >>             /var/log/pptpd.log
+echo "#登陆地址: $6" >>                                            /var/log/pptpd.log
+echo "#登陆账户: $PEERNAME" >>                              /var/log/pptpd.log
+echo "#分配网卡: $1" >>                                             /var/log/pptpd.log
+echo "#分配网段: $5" >>                                             /var/log/pptpd.log
+echo "##################################" >>   /var/log/pptpd.log
+
+vim /etc/ppp/ip-down
+
+sum_bytes=$(($BYTES_SENT+$BYTES_RCVD))
+sum=`echo "scale=2;$sum_bytes/1024/1024"|bc`
+ave=`echo "scale=2;$sum_bytes/1024/$CONNECT_TIME"|bc`
+echo "*************************************" >>  /var/log/pptpd.log
+echo "*Now User $PEERNAME is disconnected!!!" >> /var/log/pptpd.log
+echo "*************************************" >>  /var/log/pptpd.log
+echo "*断开时间: `date -d today +%F_%T`" >>           /var/log/pptpd.log
+echo "*登陆地址: $6" >>                                          /var/log/pptpd.log
+echo "*账户名称: $PEERNAME" >>                           /var/log/pptpd.log
+echo "*分配网卡: $1" >>                                           /var/log/pptpd.log
+echo "*分配网段: $5" >>                                           /var/log/pptpd.log
+echo "*连接时间: $CONNECT_TIME s" >>                  /var/log/pptpd.log
+echo "*发送流量: $BYTES_SENT B" >>                       /var/log/pptpd.log
+echo "*处理流量: $BYTES_RCVD B" >>                      /var/log/pptpd.log
+echo "*使用流量: $sum MB" >>                                 /var/log/pptpd.log
+echo "*平均网速: $ave KB/s" >>                                /var/log/pptpd.log
+echo "*************************************" >>   /var/log/pptpd.log
+——————————————————————————————————————
+
+q、Linux防火墙iptables
+    开启GRE IP 和 TCP 端口协议
+    iptables -A INPUT -p gre -j ACCEPT && iptables-save
+    iptables -A INPUT -p tcp --dport 1723 -j ACCEPT && iptables-save
+  创建NAT规则路由（指定ip范围）
+    iptables -t nat -A POSTROUTING -o  -j MASQUERADE && iptables-save
+    iptables -t nat -A POSTROUTING -o venet0  -s 192.168.0.0/24 -j MASQUERADE && iptables-save
+    iptables -t nat -A POSTROUTING -s 192.168.0.0/255.255.255.0 -j SNAT --to-source 23.83.252.29
+  创建路由转发
+    iptables -A FORWARD -i ppp+ -o venet0  -j ACCEPT && iptables-save
+    iptables -A FORWARD -i venet0  -o ppp+ -j ACCEPT && iptables-save
+  查看路由列表
+    iptables  -vnL  --line-numbers
+  删除路路由规则
+    iptables -D [INPUT| FORWARD| POSTROUTING] num
+——————————————————————————————————————
+
+r、Amazon 安全组配置
+
+  HTTP  TCP   80    网站入站
+  SSH TCP     22    终端入站
+  自定义规则 TCP   1723    VPN入站
+
+——————————————————————————————————————
+t、系统时间设置
+  在 系统配置文件 ~/.zshrc 添加
+  TZ='Asia/Shanghai';
+  export TZ
+
+——————————————————————————————————————
+u、终端常用配置
+  #启用RVM
+  source /etc/profile.d/rvm.sh
+  #时间配置
+  TZ='Asia/Shanghai';
+  export TZ
+  #解决 RUBY 路径问题
+  export PATH="/usr/local/rvm/gems/ruby-2.2.2/bin:/usr/local/rvm/bin:"
+
+——————————————————————————————————————
+v、Rails 生产环境没有日志，需要更改一下配置
+
+# Full error reports are disabled and caching is turned on
+config.consider_all_requests_local       = false # changed from true
+config.action_controller.perform_caching = true # changed from false
+
+——————————————————————————————————————
+w、Redis 服务
+  安装：apt-get install -y redis-server
+  启动并后台运行 redis-server &
+——————————————————————————————————————
+x、Bash 命令提示
+
+PS1='╭─${debian_chroot:+($debian_chroot)}\[\033[0;36m\]\u\[\033[0;31m\]@Huaxuan\[\033[00m\]:\[\033[1;33m\]\w\[\033[00m\]\n╰─\$ '
+
+——————————————————————————————————————
+内存查看清理
+
+1.清理前内存使用情况
+free -h
+
+2.开始清理
+echo 1 > /proc/sys/vm/drop_caches
+
+3.清理后内存使用情况
+free -m
+
+https://www.cnblogs.com/xd502djj/archive/2011/03/01/1968041.html
+——————————————————————————————————————
+y、HTTPS CA 证书
+
+Let's CA
+https://letsencrypt.org/getting-started/
+
+CertBot
+https://certbot.eff.org/#ubuntutrusty-nginx
+https://certbot.eff.org/all-instructions/
+
+path
+  /etc/letsencrypt
+Nginx
+./certbot-auto --nginx --nginx-server-root /usr/local/nginx/conf
+
+1、install
+  wget https://dl.eff.org/certbot-auto
+  chmod a+x certbot-auto
+  ./certbot-auto
+
+2、Get Started
+  ./path/to/certbot-auto certonly
+  ./path/to/certbot-auto certonly --standalone -d example.com -d www.example.com
+  ./path/to/certbot-auto certonly --webroot -w /var/www/example -d example.com -d www.example.com
+  ./certbot-auto certonly --standalone -d stage.api.tsinova.com
+
+3、file path
+  /etc/letsencrypt/live/example.com/fullchain.pem
+
+4、renew cert
+ sudo ./certbot-auto renew --dry-run
+
+5、不更新版本获取证书
+ ./certbot-auto renew --no-self-upgrade
+other
+  {
+    new-authz: "https://acme-v01.api.letsencrypt.org/acme/new-authz",
+    new-cert: "https://acme-v01.api.letsencrypt.org/acme/new-cert",
+    new-reg: "https://acme-v01.api.letsencrypt.org/acme/new-reg",
+    revoke-cert: "https://acme-v01.api.letsencrypt.org/acme/revoke-cert"
+  }
+
+5、通过 apt-get 安装应用 certbot
+
+ 指导页面 https://certbot.eff.org/#ubuntuxenial-nginx
+ 详细参数 https://certbot.eff.org/docs/using.html
+
+ 加密网络服务指定
+
+ certbot --nginx --nginx-server-root /usr/local/nginx/conf
+
+ cd /home/deploy/document && ./certbot-auto renew
+
+
+
+——————————————————————————————————————
+Puma 服务器配置
+
+1、上传配置文件到目录
+  cap stage puma:config
+
+——————————————————————————————————————
+Nginx 代理服务器 设置
+
+upstream torrent {
+    server unix:///var/www/torrent/shared/tmp/sockets/puma.sock;
+}
+
+server {
+    listen 80;
+    server_name torrent.koogle.cc;
+    root /var/www/torrent/current/public;
+
+    try_files $uri/index.html $uri @torrent;
+
+    location / {
+        proxy_pass http://torrent;
+        proxy_redirect off;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    }
+
+    location ~ ^/(assets|uploads)/ {
+        gzip_static on;
+        expires max;
+        add_header Cache-Control public;
+        add_header ETag "";
+        break;
+    }
+
+    location ~* \.(jpg|jpeg|png|gif|ico|css|js)$ {
+        expires 180d;
+    }
+
+    client_max_body_size 4G;
+    keepalive_timeout 65;
+}
+——————————————————————————————————————
+Nginx 大型网站主配置
+
+user deploy;
+
+worker_processes  2;
+
+#http://nginx.org/en/docs/events.html
+events {
+    worker_connections  2048;
+    multi_accept on;
+    accept_mutex on;
+    use epoll;
+}
+
+http {
+    include       mime.types;
+    default_type  application/octet-stream;
+    charset       utf-8;
+    sendfile        on;
+    tcp_nodelay     on;
+    tcp_nopush     off;
+    server_tokens  off;
+
+    keepalive_timeout  65;
+    keepalive_requests 50;
+    types_hash_max_size 2048;
+
+    server_names_hash_bucket_size 64;
+    server_names_hash_max_size 256;
+
+    #请求相应头封装
+    client_header_buffer_size 8k;
+    large_client_header_buffers 4 32k;
+    connection_pool_size 256;
+    request_pool_size 64k;
+
+    gzip on;
+    gzip_vary on;
+    gzip_disable "msie6";
+    gzip_min_length 1k;
+    gzip_comp_level 2;
+    gzip_proxied expired no-cache no-store private auth;
+
+    include sites/*;
+}
+
+
+——————————————————————————————————————
+开启 Nginx 文件目录
+http://www.cnblogs.com/siqi/archive/2012/10/07/2713732.html
+
+location /videos/ {
+  autoindex on;
+  autoindex_localtime on;
+  autoindex_exact_size on;
+}
+
+ 说明：只在 koogle.cc/videos/ 链接开启目录
+
+——————————————————————————————————————
+HMAC 密钥加密的两种形式
+模式有 DSS DSS1 MD2 MD4 MD5 MDC2 RIPEMD160 SHA SHA1 SHA224 SHA256 SHA384 SHA512
+
+require 'digest'
+
+hmacSha256 = Digest::HMAC.new(app_secret,Digest::SHA256)
+hmacSha256.digest(string_to_sign.toutf8)
+
+require 'openssl'
+
+sha256 = OpenSSL::Digest.new('SHA256')
+OpenSSL::HMAC.digest(sha256, app_secret, string_to_sign.toutf8)
+
+——————————————————————————————————————
+服务器【ECS】开启 IPV6
+  https://www.logcg.com/archives/2742.html
+
+  https://jiandanxinli.github.io/2016-08-06.html
+
+  编辑/etc/sysctl.conf，将以下三项的配置改成0
+
+  net.ipv6.conf.all.disable_ipv6 = 0
+  net.ipv6.conf.default.disable_ipv6 = 0
+  net.ipv6.conf.lo.disable_ipv6 = 0
+
+  配置 /etc/network/interfaces
+
+  auto he-ipv6
+  iface he-ipv6 inet6 v4tunnel
+  address <IPV6>::2
+  netmask 64
+  remote <Tunnel 的 Server IPv4 Address>
+  local <内网 IPv4 地址>
+  endpoint any
+  ttl 255
+  gateway <IPv6>::1
+  up ip -6 route add 2000::/3 via ::<HE 的 Server IPv4 Address> dev he-ipv6
+  up ip -6 addr add <IPv6>::1:1/128 dev he-ipv6
+  up ip -6 addr add <IPv6>::2:1/128 dev he-ipv6
+  down ip -6 route flush dev he-ipv6
+
+  启动服务 ifup he-ipv6
+  测试 ping6 ipv6.test.com
+
+——————————————————————————————————————
+QQ邮箱发送邮件
+koogleamil@qq.com
+
+IMAP/SMTP shkybvxhnvamdgia
+POP3/SMTP ttotthrkgbpqddhg
+
+——————————————————————————————————————
+RAILS USE rack cache
+
+gem 'rack-cache'
+
+set environments/production.rb
+
+ config.action_dispatch.rack_cache = {
+    :metastore    => Settings.rake_cache_meta,
+    :entitystore  => Settings.rake_cache_body,
+    :allow_reload => false # very changed
+  }
+
+  config.static_cache_control = "public, max-age=2592000" # changed
+
+more details => https://devcenter.heroku.com/articles/rack-cache-memcached-rails31
+——————————————————————————————————————
+Transmission
+
+文件目录及相关设置
+  https://trac.transmissionbt.com/wiki/UnixServer/Debian
+  http://blog.csdn.net/stripe3385/article/details/50482996
+
+# 安装
+  sudo apt-get install transmission-daemon
+# 启动
+  sudo service transmission-daemon start
+# 停止
+  sudo service transmission-daemon stop
+
+——————————————————————————————————————
+date time 时区修改为中国时间
+
+rm -rf /etc/localtime
+
+ln -s /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+
+——————————————————————————————————————
+Nginx proxy cache 代理缓存
+
+http {
+    proxy_cache_path  /var/www/cache levels=1:2 keys_zone=fatcache:8m max_size=1000m inactive=600m;
+    proxy_cache_path  /var/www/cache/temp 1 2;
+    proxy_cache_key "$scheme$host$request_uri";
+}
+
+server {
+  location / {
+    proxy_cache fatcache;
+    proxy_ignore_headers Set-Cookie Expires;
+    proxy_hide_header Set-Cookie;
+    proxy_hide_header Expires;
+    proxy_cache_bypass  $http_cache_control;
+    proxy_cache_key $scheme$proxy_host$uri$is_args$args;
+    add_header X-Proxy-Cache $upstream_cache_status;
+    proxy_cache_valid  200 302  60m;
+    proxy_cache_valid  404 1m;
+    proxy_pass  http://upstream;
+  }
+}
+
+——————————————————————————————————————
+AB 压力测试
+安装
+  apt-get install -y apache2-utils
+
+  事例
+  ab -n100 -c100 https://www.koogle.cc
+
+——————————————————————————————————————
+服务器暴力攻击 封IP ssdos
+
+fail2ban
+
+安装 apt-get install fail2ban
+启动 service fail2ban start|restart|stop
+配置 https://www.denpe.com/linux-iptables-fail2ban/
+
+解除被封的 IP 如：127.0.0.1
+
+  iptables --list -n
+  iptables -D f2b-sshd -s 127.0.0.1 -j DROP
+
+——————————————————————————————————————
+服务器 数据性能 监测 NetData
+
+https://github.com/firehol/netdata/wiki/Installation
+
+——————————————————————————————————————
+服务器病毒木马检测 clamAV
+
+apt-get install clamav
+使用介绍
+http://wiki.ubuntu.org.cn/ClamAV
+扫描系统
+clamscan
+
+——————————————————————————————————————
+shadowsocks  VPN 梯子
+
+指导 http://www.111cn.net/sys/linux/69170.htm
+
+服务端安装
+  apt-get install python-pip
+  pip install shadowsocks
+
+配置文件事例
+ /etc/shadowsocks.json
+
+{
+  "server":"192.157.192.66",
+  "server_port":8388,
+  "password":"biubiubiu",
+  "timeout":300,
+  "method":"aes-256-cfb",
+  "fast_open":true,
+  "workers": 1
+}
+
+启动
+ssserver -c /etc/shadowsocks.json -d start
+
+——————————————————————————————————————
+给服务器添加新的 IP 地址
+https://www.vultr.com/docs/add-secondary-ipv4-address
+
+Ubuntu
+
+Determine the name of your ethernet device. In this example, we'll use eth0.
+
+  ip link show
+
+Add the following lines in /etc/network/interfaces:
+
+  auto eth1:0
+  iface eth1:0 inet static
+  address 45.77.13.137
+  netmask 255.255.255.0
+
+Activate the alias with the following command:
+
+ifup eth0:0
+
+_______________________________________
+
+【VIM】操作设置
+
+set tabstop=4
+set softtabstop=4
+set shiftwidth=4
+set noexpandtab
+set nu
+set autoindent
+set cindent
+_______________________________________
+NGINX ipv6 跳转设置
+
+https://juejin.im/entry/57be823f8ac2470063221857
+
+server{
+  listen 45.32.141.115:80;
+  listen 2001:19f0:ac01:dbb:5400:01ff:fe50:9d98:80;
+  listen 45.32.141.115:443 ssl;
+  listen 2001:19f0:ac01:dbb:5400:01ff:fe50:9d98:443 ssl;
+  server_name api.tsinova.com;
+  ssl_certificate /usr/develop/nginx/sslkey/XX.crt;  #(证书公钥）
+  ssl_certificate_key /usr/develop/nginx/sslkey/XX.key;  #(证书私钥）
+  ssl_session_timeout 5m;
+  ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+  ssl_ciphers AESGCM:ALL:!DH:!EXPORT:!RC4:+HIGH:!MEDIUM:!LOW:!aNULL:!eNULL;
+  ssl_prefer_server_ciphers on;
+  add_header Strict-Transport-Security "max-age=63072000; includeSubdomains; preload";
+  add_header Content-Security-Policy upgrade-insecure-requests;
+  if ( $scheme = http ) {
+    rewrite ^/(.*) https://$server_name/ permanent;
+  }
+  location / {
+    proxy_pass http://你的国内服务器IPV4地址:端口/;
+    proxy_set_header HOST $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+  }
+}
+
+_______________________________________
+NGINX IP 分流
+
+https://n3xtchen.github.io/n3xtchen/nignx/2015/10/01/nginx-port-forwording
+
+upstream example1 {
+  server 192.168.1.223:8080;
+}
+upstream example2 {
+  server 192.168.1.224:8080;
+}
+
+server {
+  listen 80;
+  server_name service.minunix.com ;
+
+  location / {
+    if ( $remote_addr ~* ^(.*)\.(.*)\.(.*)\.*[026]$){
+      proxy_pass http://example1;
+      break;
+    }
+    proxy_pass http://example2;
+  }
+}
+_______________________________________
+NGINX 日志浏览
+
+location /logs/ {
+     alias /home/user/production/exchange/log/;
+     autoindex on;
+     autoindex_exact_size on;
+     autoindex_localtime on;
+}
+
+配置日志可直接浏览器打开
+
+mime.types
+  text/plain  txt output log;
+
+_______________________________________
+
+Nginx location
+
+语法规则： location [=|~|~*|^~] /uri/ { … }
+=  开头表示精确匹配
+^~ 开头表示uri以某个常规字符串开头，理解为匹配 url路径即可。nginx不对url做编码，因此请求为/static/20%/aa，可以被规则^~ /static/ /aa匹配到（注意是空格）。
+~  开头表示区分大小写的正则匹配
+~* 开头表示不区分大小写的正则匹配
+!~  区分大小写不匹配
+!~* 不区分大小写不匹配
+/  通用匹配，任何请求都会匹配到。
+多个location配置的情况下匹配顺序为
+首先匹配 =，其次匹配^~, 其次是按文件中顺序的正则匹配，最后是交给 / 通用匹配。当有匹配成功时候，停止匹配，按当前匹配规则处理请求。
+例子，有如下匹配规则：
+location = / { #规则A }
+
+location = /login { #规则B }
+
+location ^~ /static/ { #规则C }
+
+location ~ \.(gif|jpg|png|js|css)$ { #规则D }
+
+location ~* \.png$ { #规则E }
+
+location !~ \.xhtml$ { #规则F }
+
+location !~* \.xhtml$ { #规则G }
+
+location / { #规则H }
+
+那么产生的效果如下：
+访问根目录/， 比如http://localhost/ 将匹配规则A
+访问 http://localhost/login 将匹配规则B，http://localhost/register 则匹配规则H
+访问 http://localhost/static/a.html 将匹配规则C
+访问 http://localhost/a.gif, http://localhost/b.jpg 将匹配规则D和规则E，但是规则D顺序优先，规则E不起作用，而 http://localhost/static/c.png 则优先匹配到规则C
+访问 http://localhost/a.PNG 则匹配规则E，而不会匹配规则D，因为规则E不区分大小写。
+访问 http://localhost/a.xhtml 不会匹配规则F和规则G，http://localhost/a.XHTML不会匹配规则G，因为不区分大小写。规则F，规则G属于排除法，符合匹配规则但是不会匹配到，所以想想看实际应用中哪里会用到。
+访问 http://localhost/category/id/1111 则最终匹配到规则H，因为以上规则都不匹配，这个时候应该是nginx转发请求给后端应用服务器，比如FastCGI（php），tomcat（jsp），nginx作为方向代理服务器存在。
+
+
+所以实际使用中，个人觉得至少有三个匹配规则定义，如下：
+#直接匹配网站根，通过域名访问网站首页比较频繁，使用这个会加速处理，官网如是说。
+#这里是直接转发给后端应用服务器了，也可以是一个静态首页
+# 第一个必选规则
+location = / {
+  proxy_pass http://tomcat:8080/index
+}
+# 第二个必选规则是处理静态文件请求，这是nginx作为http服务器的强项
+# 有两种配置模式，目录匹配或后缀匹配,任选其一或搭配使用
+location ^~ /static/ {
+  root /webroot/static/;
+}
+location ~* \.(gif|jpg|jpeg|png|css|js|ico)$ {
+  root /webroot/res/;
+}
+#第三个规则就是通用规则，用来转发动态请求到后端应用服务器
+#非静态文件请求就默认是动态请求，自己根据实际把握
+#毕竟目前的一些框架的流行，带.php,.jsp后缀的情况很少了
+location / {
+    proxy_pass http://tomcat:8080/
+}
+
+_______________________________________
+文件夹占用空间
+http://man.linuxde.net/du
+
+du
+
+-a或-all 显示目录中个别文件的大小。
+-b或-bytes 显示目录或文件大小时，以byte为单位。
+-c或--total 除了显示个别目录或文件的大小外，同时也显示所有目录或文件的总和。
+-k或--kilobytes 以KB(1024bytes)为单位输出。
+-m或--megabytes 以MB为单位输出。
+-s或--summarize 仅显示总计，只列出最后加总的值。
+-h或--human-readable 以K，M，G为单位，提高信息的可读性。
+-x或--one-file-xystem 以一开始处理时的文件系统为准，若遇上其它不同的文件系统目录则略过。
+-L<符号链接>或--dereference<符号链接> 显示选项中所指定符号链接的源文件大小。
+-S或--separate-dirs 显示个别目录的大小时，并不含其子目录的大小。
+-X<文件>或--exclude-from=<文件> 在<文件>指定目录或文件。
+--exclude=<目录或文件> 略过指定的目录或文件。
+-D或--dereference-args 显示指定符号链接的源文件大小。
+-H或--si 与-h参数相同，但是K，M，G是以1000为换算单位。
+-l或--count-links 重复计算硬件链接的文件。
+
+_______________________________________
+
+终端 代理网络
+
+https://blog.fazero.me/2015/09/15/%E8%AE%A9%E7%BB%88%E7%AB%AF%E8%B5%B0%E4%BB%A3%E7%90%86%E7%9A%84%E5%87%A0%E7%A7%8D%E6%96%B9%E6%B3%95/
+方法1:
+在终端中直接运行命令
+export http_proxy=http://proxyAddress:port
+这个办法的好处是简单直接，并且影响面很小（只对当前终端有效，退出就不行了）。
+
+如果你用的是ss代理，在当前终端运行以下命令，那么wget curl 这类网络命令都会经过ss代理
+
+export ALL_PROXY=socks5://127.0.0.1:1080
+
+方法2:
+把代理服务器地址写入shell配置文件.bashrc或者.zshrc
+
+直接在.bashrc或者.zshrc添加下面内容
+
+export http_proxy="http://localhost:port"
+export https_proxy="http://localhost:port"
+以使用shadowsocks代理为例，ss的代理端口为1080,那么应该设置为
+
+export http_proxy="socks5://127.0.0.1:1080"
+export https_proxy="socks5://127.0.0.1:1080"
+_______________________________________
